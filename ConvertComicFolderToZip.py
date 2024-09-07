@@ -79,7 +79,7 @@ def move_image_files_to_sub_dir(dir_path : str):
                 print("    已经存在命名为" + target_dir_name + "的文件，且文件夹有内容，请检查")
             else:
                 if (ext in file_list) == False:
-                    os.mkdir(ext)
+                    os.mkdir(target_dir_name)
                 # 移动这种类型的图片文件到新建的文件夹中
                 for image in image_item_list:
                     if image.endswith(ext):
@@ -87,9 +87,10 @@ def move_image_files_to_sub_dir(dir_path : str):
     # 删除空文件夹
     file_list = os.listdir(dir_path)
     for item in file_list:
-        if os.path.isdir(item) and len(os.listdir(os.path.join(dir_path, item))) == 0:
+        item_path = os.path.join(dir_path, item)
+        if os.path.isdir(item_path) and len(os.listdir(item_path)) == 0:
             print("    发现空文件夹：" + os.path.join(dir_path, item))
-            os.rmdir(os.path.join(dir_path, item))
+            os.rmdir(item_path)
             print("    已删除")
 
 # 转换webp文件夹
@@ -98,15 +99,16 @@ def conver_webp_folder(dir_path : str):
     image_folder_cnt = 0  # 图片文件夹计数
     have_webp_folder = False
     for image_folder in file_list:
-        if (os.path.isdir(image_folder) and check_is_image_file(os.path.join(dir_path, image_folder))):
+
+        if (os.path.isdir(os.path.join(dir_path, image_folder)) and check_is_image_file(os.path.join(dir_path, image_folder))):
             image_folder_cnt += 1
             if image_folder == "webp":
                 have_webp_folder = True
     if have_webp_folder and image_folder_cnt == 1:
         print("    仅存在webp文件夹, 开始转换..." + dir_path)
-        os.mkdir("png")
         webp_dir_path = os.path.join(dir_path, "webp")
         png_dir_path = os.path.join(dir_path, "png")
+        os.mkdir(png_dir_path)
         webp_file_list = os.listdir(webp_dir_path)
         for webp_file in webp_file_list:
             webp_basename = os.path.basename(webp_file)
@@ -156,6 +158,7 @@ def create_zip_file(dir_path : str):
 
 # 获取当前工作目录
 current_directory = os.getcwd()
+# current_directory = "/Users/xxx"
 print("start handle: " + current_directory)
 literate_handle_dir(current_directory)
 print("success!")
